@@ -4,15 +4,15 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "moment": "^2.24.0",
     "ol": "^6.1.1"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel index.html",
-    "build": "parcel build --public-url . index.html"
+    "build": "parcel build --public-url . index.html --no-cache --no-source-maps"
   },
   "keywords": [],
   "author": "",
