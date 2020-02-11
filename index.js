@@ -18,15 +18,6 @@ var map = new Map({
   layers: [
     new TileLayer({
       source: new OSM()
-    }),
-    new ImageLayer({
-      source: new ImageArcGISRest({
-        ratio: 1,
-        params: {
-          TIME: "1548975600000,1551394800000"
-        },
-        url: ndvi_url
-      })
     })
   ],
   view: new View({
@@ -34,3 +25,32 @@ var map = new Map({
     zoom: 5
   })
 });
+
+var modisLayer = new ImageLayer({
+  source: new ImageArcGISRest({
+    ratio: 1,
+    params: {
+      TIME: "1548975600000,1551394800000"
+    },
+    url: ndvi_url
+  })
+});
+
+map.addLayer(modisLayer);
+
+// TO DO - build slider control
+
+setTimeout(function(){
+  // Change period
+  modisLayer.getSource().updateParams({TIME:"1556661600000,1559340000000"})
+},2500)
+
+setTimeout(function(){
+  // Change period
+  modisLayer.getSource().updateParams({TIME:"1564610400000,1567288800000"})
+},3500)
+
+setTimeout(function(){
+  // Change IMAGE
+  modisLayer.getSource().setUrl(lstd_url);
+},5000)
