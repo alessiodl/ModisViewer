@@ -5,6 +5,10 @@ import {fromLonLat} from 'ol/proj';
 import {Tile as TileLayer, Image as ImageLayer} from 'ol/layer';
 import {OSM, ImageArcGISRest, TileArcGISRest} from 'ol/source';
 
+import 'nouislider/distribute/nouislider.min.css';
+import noUiSlider from 'nouislider'
+import moment from 'moment';
+
 const lstd_url = "https://webgis.izs.it/arcgis/rest/services/Modis/MOD11C3_0_LSTD/ImageServer";
 const lstn_url = "https://webgis.izs.it/arcgis/rest/services/Modis/MOD11C3_5_LSTN/ImageServer";
 const ndvi_url = "https://webgis.izs.it/arcgis/rest/services/Modis/MOD13C2_0_NDVI/ImageServer";
@@ -30,27 +34,69 @@ var modisLayer = new ImageLayer({
   source: new ImageArcGISRest({
     ratio: 1,
     params: {
-      TIME: "1548975600000,1551394800000"
+      TIME: "1420066800000,1422745200000",
     },
-    url: ndvi_url
+    url: lstd_url
   })
 });
 
 map.addLayer(modisLayer);
 
-// TO DO - build slider control
+// *******************************************
+// Date slider control
+// *******************************************
+function timestampStr(str) {
+  return new Date(str).getTime();
+}
 
-setTimeout(function(){
-  // Change period
-  modisLayer.getSource().updateParams({TIME:"1556661600000,1559340000000"})
-},2500)
+var slider = document.querySelector('#slider');
 
-setTimeout(function(){
-  // Change period
-  modisLayer.getSource().updateParams({TIME:"1564610400000,1567288800000"})
-},3500)
+noUiSlider.create(slider, {
+    start: 0,
+    step: 1,
+    connect: true,
+    range: {
+      min: 0,
+      max: 11
+    },
+});
 
-setTimeout(function(){
-  // Change IMAGE
-  modisLayer.getSource().setUrl(lstd_url);
-},5000)
+var month = document.querySelector("#month");
+var timestamp = document.querySelector("#timestamp");
+const range = ['January','February','March','Aprile','May','June','July','August','September','October','November','December'];
+
+const updateTimeFilter = function(timestr){
+  let starttime = timestr;
+  let endtime = moment(new Date(timestr)).add(1,'month');
+  // console.log(starttime);
+  // console.log(new Date(endtime).getTime());
+  let timeinterval = starttime+","+ new Date(endtime).getTime().toString()
+  // console.log(timeinterval)
+  modisLayer.getSource().updateParams({TIME:timeinterval})
+};
+
+slider.noUiSlider.on('update', function (values, handle) {
+  var month_number = parseInt(values[handle])+1;
+  month.innerHTML = range[parseInt(values[handle])] + ", " + document.querySelector("#modis_year").value;
+  var timestampvalue = timestampStr(document.querySelector("#modis_year").value+","+month_number.toString()+",01");
+  timestamp.innerHTML = "Timestamp: "+timestampvalue;
+  updateTimeFilter(timestampvalue)
+});
+
+
+// Change MODIS PRODUCT
+// ********************
+const selectModis = document.querySelector('#modis_product');
+
+selectModis.addEventListener('change', (event) => {
+  let product = event.target.value;
+  if (product == 'LSTD'){
+    modisLayer.getSource().setUrl(lstd_url);
+  } else if (product == 'LSTN'){
+    modisLayer.getSource().setUrl(lstn_url);
+  } else if (product == 'NDVI'){
+    modisLayer.getSource().setUrl(ndvi_url);
+  } else {
+    modisLayer.getSource().setUrl(evi_url);
+  }
+});
