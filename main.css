@@ -40,3 +40,7 @@ html, body, #map {
     height: 20px;
     margin-bottom: 15px;
 }
+
+.noUi-touch-area {
+    background-color: darkslategray;
+}
