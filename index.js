@@ -1,3 +1,5 @@
+import '@fortawesome/fontawesome-free/js/all';
+
 import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -13,10 +15,10 @@ const lstd_url = "https://webgis.izs.it/arcgis/rest/services/Modis/MOD11C3_0_LST
 const lstn_url = "https://webgis.izs.it/arcgis/rest/services/Modis/MOD11C3_5_LSTN/ImageServer";
 const ndvi_url = "https://webgis.izs.it/arcgis/rest/services/Modis/MOD13C2_0_NDVI/ImageServer";
 const evi_url  = "https://webgis.izs.it/arcgis/rest/services/Modis/MOD13C2_1_EVI/ImageServer";
-/*let fromDate = new Date(2019,01,01).getTime();
-let toDate   = new Date(2019,02,01).getTime();
-let timefilter = fromDate.toString()+","+toDate.toString();*/
 
+// *******************************************
+// Map
+// *******************************************
 var map = new Map({
   target: 'map',
   layers: [
@@ -30,17 +32,33 @@ var map = new Map({
   })
 });
 
+// *******************************************
+// MODIS Laer
+// *******************************************
+var modisSource = new ImageArcGISRest({
+  ratio: 1,
+  params: {
+    TIME: "1420066800000,1422745200000",
+  },
+  url: lstd_url
+});
+
 var modisLayer = new ImageLayer({
-  source: new ImageArcGISRest({
-    ratio: 1,
-    params: {
-      TIME: "1420066800000,1422745200000",
-    },
-    url: lstd_url
-  })
+  source: modisSource
+});
+
+modisSource.on('imageloadstart', function() {
+  // console.log('Inizio caricamento')
+  document.querySelector('#loading-div').innerHTML='<br/><i class="fas fa-spinner fa-spin"></i> Loading MODIS data';
+});
+
+modisSource.on('imageloadend', function() {
+  // console.log('Fine caricamento')
+  document.querySelector('#loading-div').innerHTML="";
 });
 
 map.addLayer(modisLayer);
+
 
 // *******************************************
 // Date slider control
@@ -63,7 +81,7 @@ noUiSlider.create(slider, {
 
 var month = document.querySelector("#month");
 var timestamp = document.querySelector("#timestamp");
-const range = ['January','February','March','Aprile','May','June','July','August','September','October','November','December'];
+const range = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 const updateTimeFilter = function(timestr){
   let starttime = timestr;
@@ -79,7 +97,7 @@ slider.noUiSlider.on('update', function (values, handle) {
   var month_number = parseInt(values[handle])+1;
   month.innerHTML = range[parseInt(values[handle])] + ", " + document.querySelector("#modis_year").value;
   var timestampvalue = timestampStr(document.querySelector("#modis_year").value+","+month_number.toString()+",01");
-  timestamp.innerHTML = "Timestamp: "+timestampvalue;
+  // timestamp.innerHTML = "Timestamp: "+timestampvalue;
   updateTimeFilter(timestampvalue)
 });
 
@@ -99,4 +117,17 @@ selectModis.addEventListener('change', (event) => {
   } else {
     modisLayer.getSource().setUrl(evi_url);
   }
+});
+
+// Change MODIS YEAR
+// ********************
+const selectYear = document.querySelector('#modis_year');
+
+selectYear.addEventListener('change', (event) => {
+  let year = event.target.value;
+  let value = slider.noUiSlider.get();
+  let monthValue = parseInt(value) + 1;
+  let start = new Date(year,parseInt(monthValue).toString(),'01').getTime();
+  updateTimeFilter(start);
+  month.innerHTML = range[parseInt(value)] + ", " + year;
 });
