@@ -65,7 +65,6 @@ modisSource.on('imageloadend', function() {
 
 map.addLayer(modisLayer);
 
-
 // *******************************************
 // Date slider control
 // *******************************************
@@ -94,7 +93,7 @@ const updateTimeFilter = function(timestr){
   let endtime = moment(new Date(timestr)).add(1,'month');
   // console.log(starttime);
   // console.log(new Date(endtime).getTime());
-  let timeinterval = starttime+","+ new Date(endtime).getTime().toString()
+  let timeinterval = starttime+","+ new Date(endtime).getTime().toString();
   // console.log(timeinterval)
   modisLayer.getSource().updateParams({TIME:timeinterval});
   // Reset click value field
@@ -106,7 +105,7 @@ slider.noUiSlider.on('update', function (values, handle) {
   month.innerHTML = range[parseInt(values[handle])] + ", " + document.querySelector("#modis_year").value;
   var timestampvalue = timestampStr(document.querySelector("#modis_year").value+","+month_number.toString()+",01");
   // timestamp.innerHTML = "Timestamp: "+timestampvalue;
-  updateTimeFilter(timestampvalue)
+  updateTimeFilter(timestampvalue);
 });
 
 // Change MODIS PRODUCT
@@ -133,9 +132,12 @@ const selectYear = document.querySelector('#modis_year');
 selectYear.addEventListener('change', (event) => {
   let year = event.target.value;
   let value = slider.noUiSlider.get();
-  let monthValue = parseInt(value) + 1;
-  let start = new Date(year,parseInt(monthValue).toString(),'01').getTime();
-  updateTimeFilter(start);
+  let startMonth = parseInt(value);
+  let endMonth = startMonth + 1;
+  let start = new Date(year,parseInt(startMonth).toString(),'01').getTime();
+  let end = new Date(year,parseInt(endMonth).toString(),'01').getTime();
+  console.log(start+","+end)
+  updateTimeFilter(start+","+end);
   month.innerHTML = range[parseInt(value)] + ", " + year;
 });
 
