@@ -3,9 +3,11 @@ import '@fortawesome/fontawesome-free/js/all';
 import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import {fromLonLat} from 'ol/proj';
+import {fromLonLat, transform} from 'ol/proj';
 import {Tile as TileLayer, Image as ImageLayer} from 'ol/layer';
 import {OSM, ImageArcGISRest, TileArcGISRest} from 'ol/source';
+
+import axios from 'axios';
 
 import 'nouislider/distribute/nouislider.min.css';
 import noUiSlider from 'nouislider'
@@ -32,8 +34,12 @@ var map = new Map({
   })
 });
 
+map.on('click', function(evt) {
+  requestModisValues(evt.coordinate);
+});
+
 // *******************************************
-// MODIS Laer
+// MODIS Layer
 // *******************************************
 var modisSource = new ImageArcGISRest({
   ratio: 1,
@@ -90,7 +96,9 @@ const updateTimeFilter = function(timestr){
   // console.log(new Date(endtime).getTime());
   let timeinterval = starttime+","+ new Date(endtime).getTime().toString()
   // console.log(timeinterval)
-  modisLayer.getSource().updateParams({TIME:timeinterval})
+  modisLayer.getSource().updateParams({TIME:timeinterval});
+  // Reset click value field
+  document.querySelector("#click-result").innerHTML = "Click on the map...";
 };
 
 slider.noUiSlider.on('update', function (values, handle) {
@@ -100,7 +108,6 @@ slider.noUiSlider.on('update', function (values, handle) {
   // timestamp.innerHTML = "Timestamp: "+timestampvalue;
   updateTimeFilter(timestampvalue)
 });
-
 
 // Change MODIS PRODUCT
 // ********************
@@ -131,3 +138,55 @@ selectYear.addEventListener('change', (event) => {
   updateTimeFilter(start);
   month.innerHTML = range[parseInt(value)] + ", " + year;
 });
+
+// Request MODIS VALUES
+// ********************
+const requestModisValues = function(coordinates) {
+  // Transform coordinates from 3857 to 4326
+  const coords = transform(coordinates, 'EPSG:3857', 'EPSG:4326');
+  let lng = coords[0];
+  let lat = coords[1];
+  // Read selection
+  let url = modisLayer.getSource().getUrl();
+  let modis_params = modisLayer.getSource().getParams();
+  let modis_time_arr = modis_params.TIME.split(",");
+  let modis_samples_date = moment(parseInt(modis_time_arr[0])).format("DD/MM/YYYY");
+  // console.log(modis_samples_date);
+  
+  // Get Samples from Image Service
+  axios.get(url+'/getSamples',{
+    params:{
+        geometry: '{"x":'+lng+',"y":'+lat+'}',
+        geometryType:'esriGeometryPoint',
+        spatialReference:'{"wkid":4326}',
+        mosaicRule:{
+          mosaicMethod: "esriMosaicAttributes",
+          // where: "Timeref >= DATE '01/01/2019' AND Timeref <= DATE '01/03/2019'",
+          where: "Timeref = DATE '"+modis_samples_date+"'",
+          sortField: "Timeref"
+        },
+        outFields:'Name, Timeref',
+        returnFirstValueOnly:'false',
+        f: 'json'
+    }
+  }).then(function(response){
+    let samples = response.data;
+    parseModisValues(samples);
+  });
+};
+
+const parseModisValues = function(samples){
+  let pixel_value = samples.samples[0].value;
+  let source_url  = modisLayer.getSource().getUrl()
+  if (source_url.includes('LSTD') || source_url.includes('LSTN')){
+    // Normalize temperature values
+    pixel_value = (pixel_value*0.02)-273.15;
+    document.querySelector("#click-result").innerHTML = "Temp. "+pixel_value.toFixed(2)+ "°C";
+  } else {
+    // Normalize vegetation index values
+    pixel_value = pixel_value*0.0001;
+    document.querySelector("#click-result").innerHTML = "Veg. Index "+pixel_value.toFixed(3);
+  }
+  // console.log(pixel_value);
+  
+}

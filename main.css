@@ -41,6 +41,10 @@ html, body, #map {
     margin-bottom: 15px;
 }
 
+#click-result {
+    font-weight: bold;
+}
+
 .noUi-touch-area {
     background-color: darkslategray;
 }
