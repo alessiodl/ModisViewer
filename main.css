@@ -15,10 +15,11 @@ html, body, #map {
     position: absolute;
     top:10px;
     right:10px;
-    background-color: whitesmoke;
-    border: 2px solid darkgray;
-    opacity: 0.75;
+    background-color: rgba(0,60,136,.75);
+    border: 3px solid rgba(255,255,255, .4);
+    border-radius: 3px;
     padding: 20px;
+    color: white;
 }
 
 #modis_product {
@@ -46,5 +47,5 @@ html, body, #map {
 }
 
 .noUi-touch-area {
-    background-color: darkslategray;
+    background-color: #607d8b;
 }
