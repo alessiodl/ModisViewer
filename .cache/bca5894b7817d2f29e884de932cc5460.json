@@ -1,0 +1,1 @@
+{"dependencies":[],"generated":{"js":"\"use strict\";\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n/**\n * @module ol/ViewProperty\n */\n/**\n * @enum {string}\n */\nexports.default = {\n  CENTER: 'center',\n  RESOLUTION: 'resolution',\n  ROTATION: 'rotation'\n};\n//# sourceMappingURL=ViewProperty.js.map"},"hash":"a1907cb8c71b76fa937312d541fe46e0"}

@@ -1,0 +1,1 @@
+{"dependencies":[],"generated":{"js":"\"use strict\";\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n/**\n * @module ol/interaction/Property\n */\n/**\n * @enum {string}\n */\nexports.default = {\n  ACTIVE: 'active'\n};\n//# sourceMappingURL=Property.js.map"},"hash":"6dc68db79a26cd04a3c15e8680e0e7bd"}
