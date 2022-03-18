@@ -1,1 +1,0 @@
-{"dependencies":[],"generated":{"js":"\"use strict\";\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n/**\n * @module ol/ViewHint\n */\n/**\n * @enum {number}\n */\nexports.default = {\n  ANIMATING: 0,\n  INTERACTING: 1\n};\n//# sourceMappingURL=ViewHint.js.map"},"hash":"746c1872cca82343fa1274e9b7333a5e"}

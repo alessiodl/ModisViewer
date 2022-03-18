@@ -1,1 +1,0 @@
-{"dependencies":[{"name":"./processor","loc":{"line":1,"column":24}}],"generated":{"js":"var Processor = require('./processor');\n\nexports.Processor = Processor;\n"},"hash":"3bb330086c594c984f597cce183e504a"}

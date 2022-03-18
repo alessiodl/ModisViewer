@@ -1,1 +1,0 @@
-{"dependencies":[],"generated":{"js":"\"use strict\";\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n/**\n * @module ol/events/KeyCode\n */\n/**\n * @enum {number}\n * @const\n */\nexports.default = {\n  LEFT: 37,\n  UP: 38,\n  RIGHT: 39,\n  DOWN: 40\n};\n//# sourceMappingURL=KeyCode.js.map"},"hash":"09c8cdd0a710a34c8011a6e818b43d1f"}
