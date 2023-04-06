@@ -5,7 +5,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.1",
     "axios": "^0.21.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "nouislider": "^14.1.1",
     "ol": "^6.1.1",
     "ol-ext": "^3.1.9"
